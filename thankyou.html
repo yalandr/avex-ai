@@ -1,0 +1,123 @@
+<?php
+include_once 'config.php';
+
+if (isset($_POST["phone"])) {
+    $curl = curl_init();
+    $post = [
+        "first_name" => $_POST["first_name"],
+        "last_name" => $_POST["last_name"],
+        "email" => $_POST["email"],
+        "phone" => $_POST["phone"],
+        "ip" => $_POST["ip"],
+        "additional_info" => $_POST["additional_info"],
+        "land_id" => $land_id,
+        "affiliate" => $affiliate,
+        "source_url" => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+        "sub_1" => $_GET["sub_1"],
+        "sub_2" => $_GET["sub_2"],
+        "sub_3" => $_GET["sub_3"],
+        "sub_4" => $_GET["sub_4"],
+        "sub_5" => $_GET["sub_5"],
+        "test" => $_GET["test"]
+    ];
+
+    curl_setopt_array($curl, [
+        CURLOPT_URL => "https://api.elain.network/api/v1/create",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+        CURLOPT_POSTFIELDS => $post,
+        CURLOPT_HTTPHEADER => [
+            "token: $token"
+        ]
+    ]);
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    $data = json_decode($response);
+    $autologin = $data->result->redirectUrl;
+
+    if ($autologin !== '') {
+        header('refresh:3;url=' . $autologin);
+    } else {
+        header('refresh:3;');
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Congratulations!</title>
+  <link rel="shortcut icon" type="image/png" href="assets/img/favicon/favicon.png"/>
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box
+      }
+
+      body {
+          width: 100%;
+          min-height: 100vh;
+          padding: 2rem 0;
+          overflow-x: hidden;
+          display: grid;
+          place-items: center center;
+          background-color: #333;
+          background: #000 url('assets/img/hero-bg.jpg');
+          font-family: 'Inter', sans-serif;
+      }
+
+      .container {
+          width: 90%;
+          max-width: 800px;
+          margin: 0 auto;
+          color: #fff;
+          text-align: center;
+          text-shadow: 0 2px 4px #111
+      }
+
+      .logo-img {
+          display: block;
+          width: 90%;
+          max-width: 300px;
+          margin: 0 auto;
+      }
+
+      h2 {
+          font-size: 2rem;
+          text-align: center;
+          margin: 2.5rem 0 1rem 0;
+          font-weight: 800;
+          text-transform: uppercase;
+          border-bottom: 2px solid #8B006D;
+          padding-bottom: 1rem;
+      }
+
+      p {
+          font-size: 1.2rem;
+          text-align: center;
+          font-weight: 300;
+          line-height: 150%
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="assets/img/svg/logo-white.svg" alt="logo" class="logo-img">
+    <h2>Thanks for signing up!</h2>
+    <p>In a few minutes, our manager will contact you and provide you with all the access rights to the system.</p>
+  </div>
+</body>
+</html>
